@@ -9,7 +9,7 @@ export class Projectile {
     };
 
     static fire(scene, group, x, y, angle, damage, mods = {}, textureKey = 'projectile_arrow') {
-        const speed = 420;
+        const speed = 500;
         let sprite = group.getFirstDead(false);
 
         if (sprite) {
@@ -24,10 +24,22 @@ export class Projectile {
         sprite.clearTint();
         sprite.setAlpha(1);
         sprite.setDepth(250);
-        sprite.setScale(1.1);
+        sprite.setScale(1.5);
         sprite.setRotation(angle + Math.PI / 2);
         sprite.body.setSize(12, 12);
         sprite.body.setEnable(true);
+
+        // Apply color tint for extra glow effect
+        const tintMap = {
+            'projectile_arrow': 0xaaffff,
+            'projectile_fire': 0xffcc66,
+            'projectile_ice': 0xcceeFF,
+            'projectile_star': 0xffffaa,
+            'projectile_lightning': 0xffff88,
+        };
+        if (tintMap[textureKey]) {
+            sprite.setTint(tintMap[textureKey]);
+        }
 
         sprite.projectileData = {
             damage: damage,
@@ -48,6 +60,19 @@ export class Projectile {
             Math.cos(angle) * speed,
             Math.sin(angle) * speed
         );
+
+        // Pulsing glow animation
+        if (sprite.glowTween) sprite.glowTween.stop();
+        sprite.glowTween = scene.tweens.add({
+            targets: sprite,
+            scaleX: { from: 1.5, to: 1.8 },
+            scaleY: { from: 1.5, to: 1.8 },
+            alpha: { from: 1, to: 0.7 },
+            duration: 200,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+        });
 
         // Trail with color matching projectile
         const trailColor = Projectile.TRAIL_COLORS[textureKey] || 0x00ffff;
@@ -177,6 +202,10 @@ export class Projectile {
         }
         if (sprite.trail) {
             sprite.trail.stop();
+        }
+        if (sprite.glowTween) {
+            sprite.glowTween.stop();
+            sprite.glowTween = null;
         }
     }
 }

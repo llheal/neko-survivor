@@ -254,13 +254,30 @@ export class Player {
         // Shield check
         if (this.shieldActive && this.shieldHits > 0) {
             this.shieldHits--;
-            this.scene.juiceManager.flash(this.shieldSprite, 0x4488ff);
+            // FIX: Don't call flash() on Arc/Circle - use alpha tween instead
+            if (this.shieldSprite) {
+                this.scene.tweens.add({
+                    targets: this.shieldSprite,
+                    alpha: { from: 0.8, to: 0.2 },
+                    duration: 150,
+                    ease: 'Power2',
+                });
+            }
             this.scene.juiceManager.damageNumber(
                 this.sprite.x, this.sprite.y, 'BLOCKED!', '#4488FF'
             );
+            this.scene.playSound('sfx_hit');
             if (this.shieldHits <= 0) {
                 this.removeShield();
             }
+            // Brief invincibility after shield block to prevent multi-hit
+            this.isInvincible = true;
+            this.scene.time.delayedCall(500, () => {
+                this.isInvincible = false;
+                if (this.sprite && this.sprite.active) {
+                    this.sprite.setAlpha(1);
+                }
+            });
             return;
         }
 

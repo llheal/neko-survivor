@@ -146,13 +146,13 @@ export class Enemy {
             );
         }
 
-        // Chance to drop health
-        if (Math.random() < 0.08) {
+        // Chance to drop health (rare!)
+        if (Math.random() < 0.02) {
             scene.spawnHealthOrb(sprite.x, sprite.y);
         }
 
         // Chance to drop weapon pickup
-        if (Math.random() < 0.04) {
+        if (Math.random() < 0.02) {
             scene.spawnWeaponPickup(sprite.x, sprite.y);
         }
 

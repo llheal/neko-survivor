@@ -14,7 +14,7 @@ export class WaveManager {
 
     startWave() {
         this.wave++;
-        this.enemiesPerWave = Math.min(5 + this.wave * 3, 60);
+        this.enemiesPerWave = Math.min(8 + this.wave * 4, 80);
         this.enemiesSpawned = 0;
         this.enemiesRemaining = this.enemiesPerWave;
         this.waveActive = true;
@@ -23,7 +23,7 @@ export class WaveManager {
         this.scene.events.emit('waveStart', this.wave);
 
         // Start spawning
-        const spawnInterval = Math.max(200, 800 - this.wave * 30);
+        const spawnInterval = Math.max(150, 700 - this.wave * 40);
         this.spawnTimer = this.scene.time.addEvent({
             delay: spawnInterval,
             callback: this.spawnEnemy,
@@ -69,9 +69,9 @@ export class WaveManager {
         if (this.wave >= 5) types.push('bear_panda');
         const type = Phaser.Utils.Array.GetRandom(types);
 
-        // Scale stats with wave
-        const hpMultiplier = 1 + (this.wave - 1) * 0.15;
-        const spdMultiplier = 1 + (this.wave - 1) * 0.05;
+        // Scale stats with wave (steeper curve for challenge)
+        const hpMultiplier = 1 + (this.wave - 1) * 0.3;
+        const spdMultiplier = 1 + (this.wave - 1) * 0.08;
 
         this.scene.spawnEnemy(x, y, type, hpMultiplier, spdMultiplier);
         this.enemiesSpawned++;
