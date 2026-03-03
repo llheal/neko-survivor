@@ -227,8 +227,10 @@ export class Player {
             this.sprite.x, this.sprite.y, nearest.x, nearest.y
         );
 
-        const totalShots = 1 + (extraMods.extraShots || 0);
-        const spreadAngle = totalShots > 1 ? Math.min(0.6, 0.15 * totalShots) : 0;
+        // Base shots increase with level (every 2 levels = +1 shot)
+        const levelShots = Math.floor(this.level / 2);
+        const totalShots = 1 + levelShots + (extraMods.extraShots || 0);
+        const spreadAngle = totalShots > 1 ? Math.min(Math.PI * 0.8, 0.12 * totalShots) : 0;
 
         for (let i = 0; i < totalShots; i++) {
             let shotAngle = angle;
@@ -317,6 +319,10 @@ export class Player {
     levelUp() {
         this.level++;
         this.xpToNext = Math.floor(20 + this.level * 10 * 1.2);
+
+        // Auto stat boosts per level
+        this.damage = this.baseDamage * (1 + (this.level - 1) * 0.08);
+        this.attackInterval = Math.max(200, this.baseAttackInterval * (1 - (this.level - 1) * 0.03));
 
         this.scene.particleManager.levelUp(this.sprite.x, this.sprite.y);
         this.scene.playSound('sfx_levelup');
