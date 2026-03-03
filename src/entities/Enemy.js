@@ -51,6 +51,7 @@ export class Enemy {
         sprite.setScale(type === 'bear_panda' ? 1.3 : type === 'bear_polar' ? 1.15 : 1);
         sprite.setRotation(0);
         sprite.setFlipX(false);
+        sprite._weakened = false;
 
         sprite.setDepth(200);
         sprite.body.setSize(config.size.w, config.size.h);
@@ -92,14 +93,25 @@ export class Enemy {
         const px = player.sprite.x;
         const py = player.sprite.y;
 
+        // Weakened enemies move slower
+        const hpRatio = data.hp / data.maxHp;
+        const speedMod = hpRatio < 0.3 ? 0.7 : 1;
+
         const angle = Phaser.Math.Angle.Between(sprite.x, sprite.y, px, py);
         sprite.body.setVelocity(
-            Math.cos(angle) * data.speed,
-            Math.sin(angle) * data.speed
+            Math.cos(angle) * data.speed * speedMod,
+            Math.sin(angle) * data.speed * speedMod
         );
 
         if (px < sprite.x) sprite.setFlipX(true);
         else sprite.setFlipX(false);
+
+        // Weakened wobble & blink effect
+        if (hpRatio < 0.3 && hpRatio > 0) {
+            const time = Date.now() * 0.008;
+            sprite.setRotation(Math.sin(time) * 0.15);
+            sprite.setAlpha(0.5 + Math.sin(time * 2) * 0.3);
+        }
 
         if (sprite.shadow) {
             sprite.shadow.setPosition(sprite.x, sprite.y + 20);
@@ -118,7 +130,25 @@ export class Enemy {
         scene.juiceManager.damageNumber(sprite.x, sprite.y - 10, damage, '#FFFFFF');
         scene.particleManager.impact(sprite.x, sprite.y, 0x00ffff);
 
+        // Apply weakened visual when HP drops below 30%
+        const hpRatio = data.hp / data.maxHp;
+        if (hpRatio > 0 && hpRatio < 0.3 && !sprite._weakened) {
+            sprite._weakened = true;
+            // Shrink slightly
+            const baseScale = sprite.scaleX;
+            scene.tweens.add({
+                targets: sprite,
+                scaleX: baseScale * 0.85,
+                scaleY: baseScale * 0.85,
+                duration: 300,
+                ease: 'Power2',
+            });
+            // Persistent red tint
+            sprite.setTint(0xff6666);
+        }
+
         if (data.hp <= 0) {
+            sprite._weakened = false;
             Enemy.kill(scene, sprite);
             return true;
         }
