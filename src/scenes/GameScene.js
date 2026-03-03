@@ -115,6 +115,14 @@ export class GameScene extends Phaser.Scene {
         // Fade in
         this.cameras.main.fadeIn(300, 0, 0, 0);
 
+        // Start game BGM
+        try {
+            if (this.cache.audio.exists('bgm_game')) {
+                this.bgm = this.sound.add('bgm_game', { loop: true, volume: 0.3 });
+                this.bgm.play();
+            }
+        } catch (e) { }
+
         // Mobile audio resume
         this.input.once('pointerdown', () => {
             if (this.sound.context && this.sound.context.state === 'suspended') {
@@ -264,6 +272,7 @@ export class GameScene extends Phaser.Scene {
 
     gameOver() {
         this.gameActive = false;
+        if (this.bgm) this.bgm.stop();
         this.scene.stop('UIScene');
         this.cameras.main.fadeOut(500, 0, 0, 0);
         this.time.delayedCall(600, () => {

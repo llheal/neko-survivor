@@ -127,8 +127,17 @@ export class TitleScene extends Phaser.Scene {
             color: '#888888',
         }).setOrigin(0.5);
 
+        // Play title BGM
+        try {
+            if (this.cache.audio.exists('bgm_title')) {
+                this.bgm = this.sound.add('bgm_title', { loop: true, volume: 0.4 });
+                this.bgm.play();
+            }
+        } catch (e) { }
+
         // Start game on tap
         this.input.once('pointerdown', () => {
+            if (this.bgm) this.bgm.stop();
             this.cameras.main.fadeOut(300, 0, 0, 0);
             this.time.delayedCall(300, () => {
                 this.scene.start('GameScene');

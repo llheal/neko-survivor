@@ -16,11 +16,11 @@ function startGame() {
     const config = {
         type: Phaser.AUTO,
         parent: 'game-container',
-        width: 390,
-        height: 844,
+        width: window.innerWidth,
+        height: window.innerHeight,
         backgroundColor: '#1a1a2e',
         scale: {
-            mode: Phaser.Scale.FIT,
+            mode: Phaser.Scale.RESIZE,
             autoCenter: Phaser.Scale.CENTER_BOTH,
         },
         physics: {
