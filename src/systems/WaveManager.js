@@ -14,8 +14,8 @@ export class WaveManager {
 
     startWave() {
         this.wave++;
-        // Horde-style: lots of enemies, not tanky
-        this.enemiesPerWave = Math.min(15 + this.wave * 12, 300);
+        // Horde-style: massive waves that scale with player power
+        this.enemiesPerWave = Math.min(20 + this.wave * 15, 400);
         this.enemiesSpawned = 0;
         this.enemiesRemaining = this.enemiesPerWave;
         this.waveActive = true;
@@ -24,7 +24,7 @@ export class WaveManager {
         this.scene.events.emit('waveStart', this.wave);
 
         // Start spawning
-        const spawnInterval = Math.max(50, 400 - this.wave * 30);
+        const spawnInterval = Math.max(40, 350 - this.wave * 25);
         this.spawnTimer = this.scene.time.addEvent({
             delay: spawnInterval,
             callback: this.spawnEnemy,
@@ -70,9 +70,9 @@ export class WaveManager {
         if (this.wave >= 5) types.push('bear_panda');
         const type = Phaser.Utils.Array.GetRandom(types);
 
-        // Difficulty: barely scale HP (horde, not sponge), slight speed increase
-        const hpMultiplier = 1 + (this.wave - 1) * 0.08;
-        const spdMultiplier = 1 + (this.wave - 1) * 0.05;
+        // Difficulty scales to match player's growing power
+        const hpMultiplier = 1 + (this.wave - 1) * 0.15;
+        const spdMultiplier = 1 + (this.wave - 1) * 0.08;
 
         this.scene.spawnEnemy(x, y, type, hpMultiplier, spdMultiplier);
         this.enemiesSpawned++;
