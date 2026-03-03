@@ -34,7 +34,7 @@ export class GameScene extends Phaser.Scene {
         // Physics groups
         this.enemies = this.physics.add.group({
             classType: Phaser.Physics.Arcade.Sprite,
-            maxSize: 200,
+            maxSize: 300,
             runChildUpdate: false,
         });
 

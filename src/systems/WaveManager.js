@@ -15,7 +15,7 @@ export class WaveManager {
     startWave() {
         this.wave++;
         // Horde-style: lots of enemies, not tanky
-        this.enemiesPerWave = Math.min(10 + this.wave * 6, 150);
+        this.enemiesPerWave = Math.min(15 + this.wave * 12, 300);
         this.enemiesSpawned = 0;
         this.enemiesRemaining = this.enemiesPerWave;
         this.waveActive = true;
@@ -24,7 +24,7 @@ export class WaveManager {
         this.scene.events.emit('waveStart', this.wave);
 
         // Start spawning
-        const spawnInterval = Math.max(80, 500 - this.wave * 35);
+        const spawnInterval = Math.max(50, 400 - this.wave * 30);
         this.spawnTimer = this.scene.time.addEvent({
             delay: spawnInterval,
             callback: this.spawnEnemy,
