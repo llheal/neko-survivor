@@ -14,8 +14,15 @@ export class WaveManager {
 
     startWave() {
         this.wave++;
-        // Horde-style: massive waves that scale with player power
-        this.enemiesPerWave = Math.min(20 + this.wave * 15, 400);
+
+        // Early waves are easy (let player level up), then ramp hard
+        let enemyCount;
+        if (this.wave <= 2) {
+            enemyCount = 5 + this.wave * 5;       // Wave1=10, Wave2=15
+        } else {
+            enemyCount = 15 + (this.wave - 2) * 18; // Wave3=33, Wave5=69, Wave10=159
+        }
+        this.enemiesPerWave = Math.min(enemyCount, 400);
         this.enemiesSpawned = 0;
         this.enemiesRemaining = this.enemiesPerWave;
         this.waveActive = true;
@@ -23,8 +30,10 @@ export class WaveManager {
         // Show wave announcement
         this.scene.events.emit('waveStart', this.wave);
 
-        // Start spawning
-        const spawnInterval = Math.max(40, 350 - this.wave * 25);
+        // Start spawning — slow early, fast later
+        const spawnInterval = this.wave <= 2
+            ? 600 - this.wave * 100     // Wave1=500ms, Wave2=400ms
+            : Math.max(40, 350 - this.wave * 25);
         this.spawnTimer = this.scene.time.addEvent({
             delay: spawnInterval,
             callback: this.spawnEnemy,
@@ -70,9 +79,15 @@ export class WaveManager {
         if (this.wave >= 5) types.push('bear_panda');
         const type = Phaser.Utils.Array.GetRandom(types);
 
-        // Difficulty scales to match player's growing power
-        const hpMultiplier = 1 + (this.wave - 1) * 0.15;
-        const spdMultiplier = 1 + (this.wave - 1) * 0.08;
+        // Early waves: weak bears. Later: scales with player power
+        let hpMultiplier, spdMultiplier;
+        if (this.wave <= 2) {
+            hpMultiplier = 0.6;   // Weak bears early
+            spdMultiplier = 0.8;
+        } else {
+            hpMultiplier = 1 + (this.wave - 2) * 0.15;
+            spdMultiplier = 1 + (this.wave - 2) * 0.08;
+        }
 
         this.scene.spawnEnemy(x, y, type, hpMultiplier, spdMultiplier);
         this.enemiesSpawned++;
