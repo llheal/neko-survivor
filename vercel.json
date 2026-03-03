@@ -1,0 +1,27 @@
+{
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist",
+    "installCommand": "npm install",
+    "framework": null,
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ],
+    "headers": [
+        {
+            "source": "/(.*)",
+            "headers": [
+                {
+                    "key": "X-Frame-Options",
+                    "value": "ALLOW-FROM https://miniapp.line.me"
+                },
+                {
+                    "key": "Content-Security-Policy",
+                    "value": "frame-ancestors https://miniapp.line.me https://liff.line.me"
+                }
+            ]
+        }
+    ]
+}
