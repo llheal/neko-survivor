@@ -427,6 +427,126 @@ export class UIScene extends Phaser.Scene {
                 this.selectSkill(skill.id);
             });
         }
+
+        // --- LINE Share Button ---
+        const shareY = height * 0.82;
+        const shareBg = this.add.rectangle(width / 2, shareY, 200, 40, 0x06C755, 1)
+            .setStrokeStyle(0)
+            .setInteractive({ useHandCursor: true });
+        shareBg.setScrollFactor(0);
+        // Rounded corners via graphics
+        shareBg.setOrigin(0.5);
+        this.skillContainer.add(shareBg);
+
+        const shareText = this.add.text(width / 2, shareY, '📤 友だちに共有', {
+            fontFamily: 'Arial',
+            fontSize: '15px',
+            fontStyle: 'bold',
+            color: '#FFFFFF',
+        }).setOrigin(0.5);
+        this.skillContainer.add(shareText);
+
+        // Subtle pulse
+        this.tweens.add({
+            targets: [shareBg, shareText],
+            alpha: { from: 1, to: 0.75 },
+            duration: 1200,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+        });
+
+        shareBg.on('pointerdown', () => {
+            this.shareToLINE();
+        });
+    }
+
+    shareToLINE() {
+        if (!window.liff || !window.liff.isApiAvailable('shareTargetPicker')) {
+            // Fallback: copy URL
+            if (navigator.share) {
+                navigator.share({
+                    title: 'にゃんこサバイバー',
+                    text: '🐱 カワイイ猫でクマの大群を倒すローグライクゲーム！一緒に遊ぼう！',
+                    url: 'https://miniapp.line.me/2009305161-txfC9bAx',
+                });
+            }
+            return;
+        }
+
+        const gameScene = this.scene.get('GameScene');
+        const level = gameScene?.player?.level || 1;
+        const kills = gameScene?.waveManager?.totalKills || 0;
+
+        window.liff.shareTargetPicker([
+            {
+                type: 'flex',
+                altText: `🐱 にゃんこサバイバーで Lv.${level}、${kills}体倒したよ！`,
+                contents: {
+                    type: 'bubble',
+                    size: 'mega',
+                    header: {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
+                            {
+                                type: 'text',
+                                text: '🐱 にゃんこサバイバー',
+                                weight: 'bold',
+                                size: 'lg',
+                                color: '#FFD700',
+                            },
+                        ],
+                        backgroundColor: '#1a1a2e',
+                        paddingAll: '12px',
+                    },
+                    body: {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
+                            {
+                                type: 'text',
+                                text: `Lv.${level} まで到達！🎉`,
+                                weight: 'bold',
+                                size: 'md',
+                            },
+                            {
+                                type: 'text',
+                                text: `${kills}体のクマを倒したよ！`,
+                                size: 'sm',
+                                color: '#666666',
+                                margin: 'sm',
+                            },
+                            {
+                                type: 'text',
+                                text: 'カワイイ猫でクマの大群をなぎ倒すローグライクゲーム！一緒に遊ぼう！',
+                                wrap: true,
+                                size: 'xs',
+                                color: '#999999',
+                                margin: 'md',
+                            },
+                        ],
+                    },
+                    footer: {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
+                            {
+                                type: 'button',
+                                action: {
+                                    type: 'uri',
+                                    label: '🎮 プレイする！',
+                                    uri: 'https://miniapp.line.me/2009305161-txfC9bAx',
+                                },
+                                style: 'primary',
+                                color: '#e74c3c',
+                            },
+                        ],
+                        paddingAll: '10px',
+                    },
+                },
+            },
+        ]);
     }
 
     selectSkill(skillId) {
