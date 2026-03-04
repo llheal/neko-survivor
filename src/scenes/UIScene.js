@@ -461,92 +461,100 @@ export class UIScene extends Phaser.Scene {
         });
     }
 
-    shareToLINE() {
-        if (!window.liff || !window.liff.isApiAvailable('shareTargetPicker')) {
-            // Fallback: copy URL
-            if (navigator.share) {
-                navigator.share({
-                    title: 'にゃんこサバイバー',
-                    text: '🐱 カワイイ猫でクマの大群を倒すローグライクゲーム！一緒に遊ぼう！',
-                    url: 'https://miniapp.line.me/2009305161-txfC9bAx',
-                });
-            }
-            return;
-        }
-
+    async shareToLINE() {
         const gameScene = this.scene.get('GameScene');
         const level = gameScene?.player?.level || 1;
         const kills = gameScene?.waveManager?.totalKills || 0;
+        const miniAppUrl = 'https://miniapp.line.me/2009305161-txfC9bAx';
 
-        window.liff.shareTargetPicker([
-            {
-                type: 'flex',
-                altText: `🐱 にゃんこサバイバーで Lv.${level}、${kills}体倒したよ！`,
-                contents: {
-                    type: 'bubble',
-                    size: 'mega',
-                    header: {
-                        type: 'box',
-                        layout: 'vertical',
-                        contents: [
-                            {
-                                type: 'text',
-                                text: '🐱 にゃんこサバイバー',
-                                weight: 'bold',
-                                size: 'lg',
-                                color: '#FFD700',
-                            },
-                        ],
-                        backgroundColor: '#1a1a2e',
-                        paddingAll: '12px',
-                    },
-                    body: {
-                        type: 'box',
-                        layout: 'vertical',
-                        contents: [
-                            {
-                                type: 'text',
-                                text: `Lv.${level} まで到達！🎉`,
-                                weight: 'bold',
-                                size: 'md',
-                            },
-                            {
-                                type: 'text',
-                                text: `${kills}体のクマを倒したよ！`,
-                                size: 'sm',
-                                color: '#666666',
-                                margin: 'sm',
-                            },
-                            {
-                                type: 'text',
-                                text: 'カワイイ猫でクマの大群をなぎ倒すローグライクゲーム！一緒に遊ぼう！',
-                                wrap: true,
-                                size: 'xs',
-                                color: '#999999',
-                                margin: 'md',
-                            },
-                        ],
-                    },
-                    footer: {
-                        type: 'box',
-                        layout: 'vertical',
-                        contents: [
-                            {
-                                type: 'button',
-                                action: {
-                                    type: 'uri',
-                                    label: '🎮 プレイする！',
-                                    uri: 'https://miniapp.line.me/2009305161-txfC9bAx',
-                                },
-                                style: 'primary',
-                                color: '#e74c3c',
-                            },
-                        ],
-                        paddingAll: '10px',
-                    },
+        const flexMessage = {
+            type: 'flex',
+            altText: `🐱 にゃんこサバイバーで Lv.${level}、${kills}体倒したよ！`,
+            contents: {
+                type: 'bubble',
+                size: 'mega',
+                header: {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [{
+                        type: 'text',
+                        text: '🐱 にゃんこサバイバー',
+                        weight: 'bold',
+                        size: 'lg',
+                        color: '#FFD700',
+                    }],
+                    backgroundColor: '#1a1a2e',
+                    paddingAll: '12px',
+                },
+                body: {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [
+                        {
+                            type: 'text',
+                            text: `Lv.${level} まで到達！🎉`,
+                            weight: 'bold',
+                            size: 'md',
+                        },
+                        {
+                            type: 'text',
+                            text: `${kills}体のクマを倒したよ！`,
+                            size: 'sm',
+                            color: '#666666',
+                            margin: 'sm',
+                        },
+                        {
+                            type: 'text',
+                            text: 'カワイイ猫でクマの大群をなぎ倒すローグライクゲーム！一緒に遊ぼう！',
+                            wrap: true,
+                            size: 'xs',
+                            color: '#999999',
+                            margin: 'md',
+                        },
+                    ],
+                },
+                footer: {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [{
+                        type: 'button',
+                        action: {
+                            type: 'uri',
+                            label: '🎮 プレイする！',
+                            uri: miniAppUrl,
+                        },
+                        style: 'primary',
+                        color: '#e74c3c',
+                    }],
+                    paddingAll: '10px',
                 },
             },
-        ]);
+        };
+
+        // Try LIFF shareTargetPicker first
+        if (window.liff) {
+            try {
+                const result = await window.liff.shareTargetPicker([flexMessage]);
+                if (result) {
+                    console.log('Share successful');
+                }
+                return;
+            } catch (e) {
+                console.warn('shareTargetPicker failed:', e.message);
+            }
+        }
+
+        // Fallback: LINE share URL scheme
+        const shareText = encodeURIComponent(
+            `🐱 にゃんこサバイバーで Lv.${level}、${kills}体倒したよ！一緒に遊ぼう！\n${miniAppUrl}`
+        );
+        const lineShareUrl = `https://line.me/R/share?text=${shareText}`;
+
+        if (window.liff && window.liff.openWindow) {
+            window.liff.openWindow({ url: lineShareUrl, external: true });
+        } else {
+            window.open(lineShareUrl, '_blank');
+        }
     }
 
     selectSkill(skillId) {
