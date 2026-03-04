@@ -1,0 +1,9 @@
+{
+    "name": "line-webhook-server",
+    "version": "1.0.0",
+    "description": "Shared LINE Messaging API Webhook Server for all Mini Apps",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    }
+}

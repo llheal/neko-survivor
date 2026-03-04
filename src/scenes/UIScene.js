@@ -430,20 +430,18 @@ export class UIScene extends Phaser.Scene {
 
         // --- LINE Share Button ---
         const shareY = height * 0.82;
-        const shareBg = this.add.rectangle(width / 2, shareY, 200, 40, 0x06C755, 1)
-            .setStrokeStyle(0)
-            .setInteractive({ useHandCursor: true });
-        shareBg.setScrollFactor(0);
-        // Rounded corners via graphics
-        shareBg.setOrigin(0.5);
+        const shareBg = this.add.rectangle(width / 2, shareY, 220, 44, 0x06C755, 1)
+            .setInteractive({ useHandCursor: true })
+            .setDepth(9999);
         this.skillContainer.add(shareBg);
 
         const shareText = this.add.text(width / 2, shareY, '📤 友だちに共有', {
             fontFamily: 'Arial',
-            fontSize: '15px',
+            fontSize: '16px',
             fontStyle: 'bold',
             color: '#FFFFFF',
-        }).setOrigin(0.5);
+        }).setOrigin(0.5).setDepth(10000)
+            .setInteractive({ useHandCursor: true });
         this.skillContainer.add(shareText);
 
         // Subtle pulse
@@ -456,9 +454,18 @@ export class UIScene extends Phaser.Scene {
             ease: 'Sine.easeInOut',
         });
 
-        shareBg.on('pointerdown', () => {
+        const doShare = () => {
+            console.log('Share button pressed!');
+            // Visual feedback
+            shareBg.setFillStyle(0x04a643);
+            this.time.delayedCall(200, () => {
+                shareBg.setFillStyle(0x06C755);
+            });
             this.shareToLINE();
-        });
+        };
+
+        shareBg.on('pointerdown', doShare);
+        shareText.on('pointerdown', doShare);
     }
 
     async shareToLINE() {

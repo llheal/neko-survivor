@@ -9,8 +9,8 @@ import { GameScene } from './scenes/GameScene.js';
 import { UIScene } from './scenes/UIScene.js';
 import { GameOverScene } from './scenes/GameOverScene.js';
 
-// LIFF ID (開発用)
-const LIFF_ID = '2009305159-Cw9QZDYT';
+// LIFF ID (本番用)
+const LIFF_ID = '2009305161-txfC9bAx';
 
 function startGame() {
     const config = {
