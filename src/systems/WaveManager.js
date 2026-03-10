@@ -1,4 +1,5 @@
-// WaveManager.js - Progressive enemy spawning system
+// WaveManager.js - Spawner logic with progressive waves
+import { SaveManager } from './SaveManager.js';
 export class WaveManager {
     constructor(scene) {
         this.scene = scene;
@@ -100,6 +101,13 @@ export class WaveManager {
         if (this.enemiesRemaining <= 0 && this.waveActive) {
             this.waveActive = false;
             this.scene.events.emit('waveComplete', this.wave);
+
+            // Auto-save on wave complete
+            try {
+                if (this.scene.gameActive) {
+                    SaveManager.save(this.scene);
+                }
+            } catch (e) { }
 
             // Delay before next wave
             this.scene.time.delayedCall(2000, () => {

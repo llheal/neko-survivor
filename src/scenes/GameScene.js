@@ -9,10 +9,15 @@ import { WaveManager } from '../systems/WaveManager.js';
 import { SkillManager } from '../systems/SkillManager.js';
 import { JuiceManager } from '../systems/JuiceManager.js';
 import { ParticleManager } from '../systems/ParticleManager.js';
+import { SaveManager } from '../systems/SaveManager.js';
 
 export class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
+    }
+
+    init(data) {
+        this._loadSave = data?.loadSave || false;
     }
 
     create() {
@@ -107,10 +112,18 @@ export class GameScene extends Phaser.Scene {
             this.showSkillSelection();
         });
 
-        // Start first wave
+        // Load save or start fresh
+        if (this._loadSave) {
+            this.loadSaveData();
+        }
+
+        // Start first wave (if not loaded from save, wave is 0)
         this.time.delayedCall(1500, () => {
             this.waveManager.startWave();
         });
+
+        // Start auto-save
+        SaveManager.startAutoSave(this);
 
         // Fade in
         this.cameras.main.fadeIn(300, 0, 0, 0);
@@ -272,6 +285,8 @@ export class GameScene extends Phaser.Scene {
 
     gameOver() {
         this.gameActive = false;
+        SaveManager.stopAutoSave(this);
+        SaveManager.deleteSave(); // Game over = no save
         if (this.bgm) this.bgm.stop();
         this.scene.stop('UIScene');
         this.cameras.main.fadeOut(500, 0, 0, 0);
@@ -283,5 +298,56 @@ export class GameScene extends Phaser.Scene {
                 level: this.player.level,
             });
         });
+    }
+
+    loadSaveData() {
+        const data = SaveManager.load();
+        if (!data) return;
+
+        console.log('[Load] Restoring save: Lv.', data.player.level, 'Wave', data.wave);
+
+        // Restore player state
+        const p = this.player;
+        p.sprite.setPosition(data.player.x, data.player.y);
+        p.hp = data.player.hp;
+        p.maxHp = data.player.maxHp;
+        p.level = data.player.level;
+        p.xp = data.player.xp;
+        p.xpToNext = data.player.xpToNext;
+        p.damage = data.player.damage;
+        p.speed = data.player.speed;
+        p.attackInterval = data.player.attackInterval;
+        p.critChance = data.player.critChance || 0;
+        p.critMultiplier = data.player.critMultiplier || 1.5;
+        p.freezeChance = data.player.freezeChance || 0;
+        p.evolutionStage = data.player.evolutionStage || 0;
+        p.currentSpriteKey = data.player.currentSpriteKey || 'cat';
+
+        // Apply evolution sprite
+        if (p.currentSpriteKey !== 'cat') {
+            p.sprite.setTexture(p.currentSpriteKey, 0);
+        }
+
+        // Restore shield
+        if (data.player.shieldActive && data.player.shieldHits > 0) {
+            p.activateShield(data.player.shieldHits);
+        }
+
+        // Restore wave
+        this.waveManager.wave = data.wave;
+        this.waveManager.totalKills = data.totalKills || 0;
+
+        // Restore score
+        this.score = data.score || 0;
+
+        // Restore skills
+        if (data.acquiredSkills) {
+            this.skillManager.acquiredSkills = { ...data.acquiredSkills };
+            this.skillManager.applySkillEffects();
+        }
+
+        // Update UI
+        this.events.emit('playerHPChanged', p.hp, p.maxHp);
+        this.events.emit('xpChanged', p.xp, p.xpToNext, p.level);
     }
 }
