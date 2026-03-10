@@ -6,7 +6,7 @@ import { XPGem, HealthOrb } from '../entities/XPGem.js';
 import { WeaponPickup } from '../entities/WeaponPickup.js';
 import { InputManager } from '../systems/InputManager.js';
 import { WaveManager } from '../systems/WaveManager.js';
-import { SkillManager } from '../systems/SkillManager.js';
+import { SkillManager, SKILLS } from '../systems/SkillManager.js';
 import { JuiceManager } from '../systems/JuiceManager.js';
 import { ParticleManager } from '../systems/ParticleManager.js';
 import { SaveManager } from '../systems/SaveManager.js';
@@ -314,9 +314,6 @@ export class GameScene extends Phaser.Scene {
         p.level = data.player.level;
         p.xp = data.player.xp;
         p.xpToNext = data.player.xpToNext;
-        p.damage = data.player.damage;
-        p.speed = data.player.speed;
-        p.attackInterval = data.player.attackInterval;
         p.critChance = data.player.critChance || 0;
         p.critMultiplier = data.player.critMultiplier || 1.5;
         p.freezeChance = data.player.freezeChance || 0;
@@ -339,14 +336,33 @@ export class GameScene extends Phaser.Scene {
         // Restore score
         this.score = data.score || 0;
 
-        // Restore skills
+        // Restore skills — apply effects first (this resets stats to base + skill modifiers)
         if (data.acquiredSkills) {
             this.skillManager.acquiredSkills = { ...data.acquiredSkills };
             this.skillManager.applySkillEffects();
         }
 
-        // Update UI
-        this.events.emit('playerHPChanged', p.hp, p.maxHp);
-        this.events.emit('xpChanged', p.xp, p.xpToNext, p.level);
+        // Re-apply level-based auto-boosts ON TOP of skill effects
+        // (applySkillEffects calls resetStats which only has base values)
+        p.damage = p.baseDamage * (1 + (p.level - 1) * 0.08);
+        p.attackInterval = Math.max(200, p.baseAttackInterval * (1 - (p.level - 1) * 0.03));
+
+        // Apply skill damage multiplier on top of level boost
+        if (data.acquiredSkills?.DMG !== undefined) {
+            const dmgLevel = SKILLS.DMG.levels[data.acquiredSkills.DMG];
+            p.damage *= dmgLevel.multiplier;
+        }
+        // Apply skill attack speed on top of level boost
+        if (data.acquiredSkills?.ATKSPD !== undefined) {
+            const atkLevel = SKILLS.ATKSPD.levels[data.acquiredSkills.ATKSPD];
+            p.attackInterval *= atkLevel.multiplier;
+        }
+
+        // Delay UI update to ensure UIScene is ready
+        this.time.delayedCall(200, () => {
+            this.events.emit('playerHPChanged', p.hp, p.maxHp);
+            this.events.emit('xpChanged', p.xp, p.xpToNext, p.level);
+            this.events.emit('waveStart', this.waveManager.wave);
+        });
     }
 }
