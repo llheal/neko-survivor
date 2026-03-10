@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>にゃんこサバイバー | UNIIS公式通販 - LINEミニアプリ ゲームサービス</title>
+    <meta name="description" content="にゃんこサバイバーは、UNIIS公式通販が提供するLINEミニアプリ対応のカジュアルゲームです。かわいい猫を操作してクマの大群に立ち向かうローグライクアクションシューティング。">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            background: #0f1123;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 30% 40%, rgba(255,215,0,0.08) 0%, transparent 60%),
+                        radial-gradient(circle at 70% 60%, rgba(231,76,60,0.06) 0%, transparent 60%);
+        }
+        .hero h1 {
+            font-size: 36px;
+            color: #FFD700;
+            text-shadow: 0 2px 10px rgba(255,215,0,0.3);
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .hero .subtitle {
+            font-size: 16px;
+            color: #AAAACC;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .hero .desc {
+            font-size: 15px;
+            color: #ccccdd;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 16px 0;
+            position: relative;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        section {
+            padding: 40px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        section:last-child { border: none; }
+        h2 {
+            font-size: 20px;
+            color: #FFD700;
+            margin-bottom: 20px;
+            padding-left: 14px;
+            border-left: 4px solid #e74c3c;
+        }
+        h3 {
+            font-size: 16px;
+            color: #ffffff;
+            margin: 16px 0 8px;
+        }
+        p { margin-bottom: 12px; font-size: 14px; }
+        ul { padding-left: 20px; margin-bottom: 12px; }
+        li { font-size: 14px; margin-bottom: 6px; }
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 600px) {
+            .features { grid-template-columns: 1fr; }
+        }
+        .feature-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .feature-card .icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .feature-card h3 {
+            font-size: 15px;
+            margin: 0 0 6px;
+            color: #FFD700;
+        }
+        .feature-card p {
+            font-size: 13px;
+            color: #999;
+            margin: 0;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .info-table th, .info-table td {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .info-table th {
+            color: #AAAACC;
+            font-weight: normal;
+            width: 140px;
+        }
+        .info-table td {
+            color: #ffffff;
+        }
+        .cta {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #16213e, #0f3460);
+        }
+        .cta a {
+            display: inline-block;
+            background: #06C755;
+            color: white;
+            text-decoration: none;
+            padding: 14px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .cta a:hover { transform: scale(1.05); }
+        .cta p {
+            color: #888;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            background: #0a0c1a;
+            font-size: 12px;
+            color: #666;
+        }
+        footer a { color: #888; }
+        .screenshots {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        .screenshot-placeholder {
+            min-width: 160px;
+            height: 280px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #666;
+            font-size: 13px;
+        }
+        .screenshot-placeholder .emoji { font-size: 40px; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>🐱 にゃんこサバイバー</h1>
+        <p class="subtitle">Neko Survivor — Roguelike Action Shooting</p>
+        <div class="badge">LINEミニアプリ 対応</div>
+        <p class="desc">
+            カワイイ猫を操作して無限に襲いかかるクマ軍団に立ち向かう
+            ローグライク × アクションシューティングゲーム。
+            LINEで今すぐ無料プレイ！
+        </p>
+    </div>
+
+    <div class="container">
+        <!-- サービス概要 -->
+        <section>
+            <h2>サービス概要</h2>
+            <p>
+                「にゃんこサバイバー」は、UNIIS公式通販が企画・運営するLINEミニアプリ対応の
+                カジュアルゲームサービスです。LINEアプリ上で即座にプレイ可能で、
+                ダウンロードやアカウント作成は不要です。
+            </p>
+            <p>
+                プレイヤーは猫キャラクターを操作し、次々と出現する敵（クマ）に自動攻撃で
+                立ち向かいます。レベルアップ時にスキルを選択して強化するローグライク要素と、
+                直感的なジョイスティック操作によるアクション要素を組み合わせた、
+                手軽に遊べるシューティングゲームです。
+            </p>
+            <table class="info-table">
+                <tr><th>サービス名</th><td>にゃんこサバイバー（Neko Survivor）</td></tr>
+                <tr><th>サービス形態</th><td>LINEミニアプリ（ゲーム）</td></tr>
+                <tr><th>料金</th><td>完全無料（課金要素なし）</td></tr>
+                <tr><th>対象ユーザー</th><td>LINEユーザー全般（全年齢対象）</td></tr>
+                <tr><th>利用方法</th><td>LINEアプリ内でミニアプリを起動して即プレイ</td></tr>
+                <tr><th>提供開始</th><td>2026年3月</td></tr>
+            </table>
+        </section>
+
+        <!-- ゲーム機能 -->
+        <section>
+            <h2>主な機能・特徴</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="icon">🎮</div>
+                    <h3>直感操作</h3>
+                    <p>ジョイスティックで移動、攻撃は自動。片手でも遊べるシンプルな操作</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">⚔️</div>
+                    <h3>ローグライク要素</h3>
+                    <p>レベルアップごとにスキルを選択。12種類のスキルの組み合わせで毎回異なる体験</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🐱</div>
+                    <h3>キャラクター進化</h3>
+                    <p>レベルに応じて猫キャラクターが進化。ブルー→レッド→パープルの3段階</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">📤</div>
+                    <h3>LINE友だちに共有</h3>
+                    <p>ゲーム中にプレイ成果をLINE友だちに共有。ソーシャル機能を活用</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">💾</div>
+                    <h3>自動セーブ</h3>
+                    <p>途中退出しても自動保存。次回起動時に「つづきから」で復帰可能</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🌊</div>
+                    <h3>ウェーブ制バトル</h3>
+                    <p>ウェーブごとに敵が強化。プレイヤーも成長してエンドレスバトルに挑戦</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 操作手順 -->
+        <section>
+            <h2>ご利用の流れ</h2>
+            <ol style="padding-left: 20px;">
+                <li>LINEアプリで「にゃんこサバイバー」ミニアプリを開く</li>
+                <li>タイトル画面の「TAP TO START」をタップ</li>
+                <li>画面左下のジョイスティックでキャラクターを移動</li>
+                <li>敵への攻撃は自動で行われます</li>
+                <li>経験値を獲得してレベルアップ時にスキルを選択</li>
+                <li>より高いウェーブ・スコアを目指します</li>
+            </ol>
+        </section>
+
+        <!-- 取得する情報 -->
+        <section>
+            <h2>取得するユーザー情報</h2>
+            <p>本サービスでは、以下の最小限の情報のみを使用します。</p>
+            <ul>
+                <li><strong>LINEプロフィール情報</strong>（表示名）— ゲーム内表示用</li>
+                <li><strong>ゲームプレイデータ</strong>（スコア、レベル）— セーブ機能用（端末のlocalStorageに保存、サーバーへの送信なし）</li>
+            </ul>
+            <p>※個人情報のサーバー保存や第三者提供は行いません。</p>
+        </section>
+
+        <!-- 事業者情報 -->
+        <section>
+            <h2>サービス提供者情報</h2>
+            <table class="info-table">
+                <tr><th>運営主体</th><td>UNIIS公式通販</td></tr>
+                <tr><th>所在地</th><td>京都府八幡市八幡園内63番地の18</td></tr>
+                <tr><th>連絡先</th><td><a href="mailto:contact@km-studio.top" style="color:#44aaff;">contact@km-studio.top</a></td></tr>
+                <tr><th>プロバイダー名</th><td>UNIIS公式通販</td></tr>
+                <tr><th>LINE公式アカウント</th><td>KM-Studio（@881whzvo）</td></tr>
+            </table>
+        </section>
+
+        <!-- 関連リンク -->
+        <section>
+            <h2>関連リンク</h2>
+            <ul>
+                <li><a href="./privacy.html" style="color:#44aaff;">プライバシーポリシー</a></li>
+                <li><a href="./terms.html" style="color:#44aaff;">サービス利用規約</a></li>
+            </ul>
+        </section>
+    </div>
+
+    <div class="cta">
+        <a href="https://miniapp.line.me/2009305161-txfC9bAx">LINEでプレイする 🎮</a>
+        <p>※ LINEアプリが必要です。完全無料・課金なし。</p>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 UNIIS公式通販. All rights reserved.</p>
+        <p style="margin-top: 8px;">
+            <a href="./privacy.html">プライバシーポリシー</a> ／
+            <a href="./terms.html">サービス利用規約</a>
+        </p>
+    </footer>
+</body>
+</html>
