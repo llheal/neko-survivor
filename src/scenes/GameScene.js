@@ -323,10 +323,9 @@ export class GameScene extends Phaser.Scene {
         p.evolutionStage = data.player.evolutionStage || 0;
         p.currentSpriteKey = data.player.currentSpriteKey || 'cat';
 
-        // Apply evolution sprite
-        if (p.currentSpriteKey !== 'cat') {
-            p.sprite.setTexture(p.currentSpriteKey, 0);
-        }
+        // Apply evolution sprite + animation
+        p.sprite.setTexture(p.currentSpriteKey, 0);
+        p.sprite.play(p.getAnimKey('idle'));
 
         // Restore shield
         if (data.player.shieldActive && data.player.shieldHits > 0) {
